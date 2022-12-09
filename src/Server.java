@@ -1,8 +1,11 @@
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Map;
+import static java.util.Map.entry; 
 
 public class Server {
 
@@ -11,10 +14,14 @@ private static ServerSocket serverSocket;
 private static Socket clientSocket;
 private static InputStreamReader inputStreamReader;
 private static BufferedReader bufferedReader;
-private static String message="";
+private static String eventId = "";
+private static String preEventId = "";
+
+static Map<String, String> ewents = Map.ofEntries(
+	    entry("init game library", "test.bat")
+	);
 
 public static void main(String[] args) {
-
 	try {
 		// creating a new ServerSocket at port 4444
 		serverSocket = new ServerSocket(4444);
@@ -24,11 +31,11 @@ public static void main(String[] args) {
 	}
 
 	System.out.println("Server started. Listening to the port 4444");
-
+	
 	// we keep listening to the socket's
 	// input stream until the message
 	// "over" is encountered
-	while (!message.equalsIgnoreCase("over")) {
+	while (!eventId.equalsIgnoreCase("over")) {
 		try {
 
 			// the accept method waits for a new client connection
@@ -39,20 +46,22 @@ public static void main(String[] args) {
 			// the message from the clients
 			inputStreamReader = new InputStreamReader(clientSocket.getInputStream());
 			bufferedReader = new BufferedReader(inputStreamReader);					
-			
+		
 			// reading the message
-			message = bufferedReader.readLine();
+			preEventId = bufferedReader.readLine();
 			
-			// printing the message
-			System.out.println(message);
-			
-			if (message.equals("init game library")) {
-				Runtime.getRuntime().exec("C:\\Windows\\System32\\DisplaySwitch.exe /external");
-				Runtime.getRuntime().exec("C:\\Users\\JUAN ORTIZ\\AppData\\Local\\Playnite\\Playnite.FullscreenApp.exe");
+			if(isEmptyString(preEventId)) {
+				inputStreamReader.close();
+				clientSocket.close();
+				continue;
 			}
 			
-			if (message.equals("reset DS4")) {
-				Runtime.getRuntime().exec("powershell.exe taskkill /IM \"DS4Windows.exe\"");
+			eventId = preEventId;
+
+			if (!isEmptyString(ewents.get(eventId))) {
+				String event = ewents.get(eventId);
+				System.out.println(event);
+				Runtime.getRuntime().exec("cmd /c start \"\" " + event, null, new File("C:\\Users\\JUAN ORTIZ\\Documents\\Events\\"));
 			}
 
 			// finally it is very important
@@ -60,9 +69,13 @@ public static void main(String[] args) {
 			inputStreamReader.close();
 			clientSocket.close();
 
-		} catch (IOException ex) {
-			System.out.println("Problem in message reading");
+			} catch (IOException ex) {
+				System.out.println("Problem in message reading");
+			}
 		}
 	}
-}
+
+	public static boolean isEmptyString(String str) {
+		return str == null || str.trim().isEmpty();
+	}
 }
