@@ -16,9 +16,11 @@ private static InputStreamReader inputStreamReader;
 private static BufferedReader bufferedReader;
 private static String eventId = "";
 private static String preEventId = "";
+private static String eventsPath = "C:\\Users\\JUAN ORTIZ\\Documents\\Events\\";
 
 static Map<String, String> ewents = Map.ofEntries(
-	    entry("init game library", "test.bat")
+	    entry("init game library", "initGameLibrary.bat"),
+	    entry("reset DS4", "resetDS4.bat")
 	);
 
 public static void main(String[] args) {
@@ -57,11 +59,12 @@ public static void main(String[] args) {
 			}
 			
 			eventId = preEventId;
+			System.out.println(eventId);
 
 			if (!isEmptyString(ewents.get(eventId))) {
 				String event = ewents.get(eventId);
 				System.out.println(event);
-				Runtime.getRuntime().exec("cmd /c start \"\" " + event, null, new File("C:\\Users\\JUAN ORTIZ\\Documents\\Events\\"));
+				Runtime.getRuntime().exec("cmd /c start \"\" " + event, null, new File(eventsPath));
 			}
 
 			// finally it is very important
