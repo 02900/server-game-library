@@ -24,7 +24,7 @@ static Map<String, String> scripts = Map.ofEntries(
 	    entry("PLAY", "play.bat"),
 	    entry("RESET_DS4", "resetDS4.bat"),
 	    entry("SLEEP", "sleep.bat"),
-	    entry("SIGN_OUT", "sign_out.bat")
+	    entry("RESTART", "restart.bat")
 	);
 
 public static void main(String[] args) {
